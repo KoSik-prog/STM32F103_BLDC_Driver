@@ -353,12 +353,12 @@
   /* Delay for ADC stabilization time.                                        */
   /* Maximum delay is 1us (refer to device datasheet, parameter tSTAB).       */
   /* Unit: us                                                                 */
-  #define ADC_STAB_delay_Us               1U
+  #define ADC_STAB_DELAY_US               1U
 
   /* Delay for temperature sensor stabilization time.                         */
   /* Maximum delay is 10us (refer to device datasheet, parameter tSTART).     */
   /* Unit: us                                                                 */
-  #define ADC_TEMPSENSOR_delay_Us         10U
+  #define ADC_TEMPSENSOR_DELAY_US         10U
 
 /**
   * @}
@@ -2076,7 +2076,7 @@ HAL_StatusTypeDef HAL_ADC_ConfigChannel(ADC_HandleTypeDef* hadc, ADC_ChannelConf
         {
           /* Delay for temperature sensor stabilization time */
           /* Compute number of CPU cycles to wait for */
-          wait_loop_index = (ADC_TEMPSENSOR_delay_Us * (SystemCoreClock / 1000000U));
+          wait_loop_index = (ADC_TEMPSENSOR_DELAY_US * (SystemCoreClock / 1000000U));
           while(wait_loop_index != 0U)
           {
             wait_loop_index--;
@@ -2252,7 +2252,7 @@ HAL_StatusTypeDef ADC_Enable(ADC_HandleTypeDef* hadc)
     
     /* Delay for ADC stabilization time */
     /* Compute number of CPU cycles to wait for */
-    wait_loop_index = (ADC_STAB_delay_Us * (SystemCoreClock / 1000000U));
+    wait_loop_index = (ADC_STAB_DELAY_US * (SystemCoreClock / 1000000U));
     while(wait_loop_index != 0U)
     {
       wait_loop_index--;

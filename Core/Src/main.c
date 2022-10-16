@@ -227,7 +227,7 @@ int main(void){
 	bldcMotor.pwmU = 0;
 	bldcMotor.pwmV = 0;
 	bldcMotor.pwmW = 0;
-	bldcMotor.expectedPosition = 1500;
+	bldcMotor.expectedPosition = 1000;
 	bldcMotor.fieldPosition = 0;
 	bldcMotor.fieldLastPosition = 0;
 	bldcMotor.direction = 0;

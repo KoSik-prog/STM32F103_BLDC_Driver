@@ -91,6 +91,37 @@ void bldc_Set_NewPosition(uint16_t deadZone, uint16_t stepsToChange) {
 }
 
 /*
+ * on/off switch simulation
+ * call in timer
+ *
+ *
+ * center point calculation error !!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * error when point2 < point1
+ * */
+void bldcHapticSwitch(uint16_t point1, uint16_t point2){
+	uint16_t centerPoint, centerPoint2, bufPoint;
+
+	if(point1 > point2){  //odworcenie punktow
+		bufPoint = point2;
+		point2 = point1;
+		point1 = bufPoint;
+	}
+	centerPoint = ((point2 - point1)/2) + point1;
+
+	centerPoint2 = centerPoint + 2047;
+	if(centerPoint2 > 4095){
+		centerPoint2 = centerPoint2 - 4095;
+	}
+
+	if (bldcEncoder.calculatedAngle >= centerPoint && bldcEncoder.calculatedAngle < centerPoint2) {
+		bldcMotor.expectedPosition = point2;
+	} else {
+		bldcMotor.expectedPosition = point1;
+	}
+}
+
+
+/*
  * calculation of power and next position
  * interrupt 100Hz
  * */
@@ -203,24 +234,24 @@ void bldc_Create_FocArray(uint16_t *tab){
 void set_field(int16_t motorPosition, float moc_silnika){
 	uint16_t actualPosition;
 
-	#define przesuniecie1 MOTOR_RESOLUTION/3
-	#define przesuniecie2 MOTOR_RESOLUTION/1.5
+	#define shift1 MOTOR_RESOLUTION/3
+	#define shift2 MOTOR_RESOLUTION/1.5
 
 		actualPosition = motorPosition;
 		bldcMotor.pwmU = (uint16_t)(focArray[motorPosition] * moc_silnika / 100);
 
 
-		if(motorPosition > MOTOR_RESOLUTION - przesuniecie1){
-			actualPosition = motorPosition - MOTOR_RESOLUTION + przesuniecie1;
+		if(motorPosition > MOTOR_RESOLUTION - shift1){
+			actualPosition = motorPosition - MOTOR_RESOLUTION + shift1;
 		} else {
-			actualPosition = motorPosition + przesuniecie1;
+			actualPosition = motorPosition + shift1;
 		}
 		bldcMotor.pwmV = (uint16_t)(focArray[actualPosition] * moc_silnika / 100);
 
-		if(motorPosition > MOTOR_RESOLUTION - przesuniecie2){
-			actualPosition = motorPosition - MOTOR_RESOLUTION + przesuniecie2;
+		if(motorPosition > MOTOR_RESOLUTION - shift2){
+			actualPosition = motorPosition - MOTOR_RESOLUTION + shift2;
 		} else {
-			actualPosition = motorPosition + przesuniecie2;
+			actualPosition = motorPosition + shift2;
 		}
 		bldcMotor.pwmW = (uint16_t)(focArray[actualPosition] * moc_silnika / 100);
 

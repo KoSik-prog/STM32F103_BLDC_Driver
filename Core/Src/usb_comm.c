@@ -11,8 +11,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-uint16_t degree = 0;
+uint16_t expectedDegree = 0;
 uint16_t expectedPosition = 0;
+uint16_t expectedPower = 30;
+uint8_t mode = 0;
 
 
 uint8_t read_variable(uint8_t *Data, char sparam[3], uint16_t *param, uint8_t array_size){
@@ -43,8 +45,12 @@ uint8_t read_variable(uint8_t *Data, char sparam[3], uint16_t *param, uint8_t ar
 void decode_message(uint8_t *Data, uint8_t array_size) {
 	for (uint8_t j = 0; j < 3; j++) {
 		if (Data[0] == '#') {
-			if (!read_variable(Data, "pos", &expectedPosition, array_size)) {
-				read_variable(Data, "deg", &degree, array_size);
+			if (!read_variable(Data, "mod", &mode, array_size)) {
+				if (!read_variable(Data, "pwr", &expectedPower, array_size)) {
+					if (!read_variable(Data, "pos", &expectedPosition, array_size)) {
+						read_variable(Data, "deg", &expectedDegree, array_size);
+					}
+				}
 			}
 			//------------------------------------------------------------------------
 

@@ -270,11 +270,11 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 
 	  strlcpy((char*)ReceivedData, (char*)Buf, (*Len) + 1);
 
-	  uint8_t DataToSend[40];
+	  uint8_t DataToSend[80];
 	  uint8_t MessageLength = 0;
 
 	  if (ReceivedData[0] == '?') {
-		  MessageLength = sprintf((char*)DataToSend, "%s\n\r", "BLDC Controller");
+		  MessageLength = sprintf((char*)DataToSend, "$%s/\n\r", "BLDCController");
 		  CDC_Transmit_FS(DataToSend, MessageLength);
 	  } else {
 		  decode_message(ReceivedData, 40);

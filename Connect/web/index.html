@@ -9,54 +9,56 @@
       <div class='pageHolder'>
         <h1 id="myTitle">BLDC Driver connect</h1>
 
-            <div id="myText">Motor position:</div>
-            <div id="var" height="50px">
-              <div id="bldcPosition">0</div>
-            </div>
-
-              <div id="myText">PWM U:</div>
-              <div id="var">
-                <div id="bldcPwmU">0</div>
-              </div>
-
-              <div id="myText">PWM V:</div>
-              <div id="var">
-                <div id="bldcPwmV">0</div>
-              </div>
-
-              <div id="myText">PWM W:</div>
-              <div id="var">
-                <div id="bldcPwmW">0</div>
-              </div>
+        <div id="pwmHolder">
+          <svg id="pwmSVG" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="3" x2="100" y2="3" style="stroke:rgb(49, 49, 49); stroke-width:6";/>
+            <line id="pwmU" x1="0" y1="3" x2="100" y2="3" style="stroke:rgb(88, 85, 56); stroke-width:6";/>
+            <line x1="0" y1="13" x2="100" y2="13" style="stroke:rgb(49, 49, 49); stroke-width:6";/>
+            <line id="pwmV" x1="0" y1="13" x2="100" y2="13" style="stroke:rgb(56, 90, 64); stroke-width:6";/>
+            <line x1="0" y1="23" x2="100" y2="23" style="stroke:rgb(49, 49, 49); stroke-width:6";/>
+            <line id="pwmW" x1="0" y1="23" x2="100" y2="23" style="stroke:rgb(72, 60, 88); stroke-width:6";/>
+            <style>
+              .pwmFont {
+                font: 4px Verdana;
+                fill: #9f9f9f;
+              }
+            </style>
+            <text x="0" y="4.5" class="pwmFont">PWM U</text>
+            <text id="bldcPwmU" x="50" y="4.5" class="pwmFont">0</text>
+            <text x="0" y="14.5" class="pwmFont">PWM V</text>
+            <text id="bldcPwmV" x="50" y="14.5" class="pwmFont">0</text>
+            <text x="0" y="24.5" class="pwmFont">PWM W</text>
+            <text id="bldcPwmW" x="50" y="24.5" class="pwmFont">0</text>
+          </svg>
+        </div>
 
       <svg id="motorSVG" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50%" cy="50%" r="49%" stroke="black" stroke-width="1" fill="white"/>
-        <line id="motorPosition" x1="50%" y1="50%" x2="50%" y2="1px" style="stroke:rgb(68, 68, 68); stroke-width:1";/>
+        <style>
+          .posFont {
+            font: 8px Verdana;
+          }
+        </style>
+        <circle cx="50%" cy="50%" r="49%" stroke="#909090" stroke-width="1" fill="#505050"/>
+        <text id="bldcPosition" x="52%" y="65%" class="posFont">0</text>
+        <line id="motorPosition" x1="50%" y1="50%" x2="50%" y2="1px" style="stroke:rgb(128, 128, 128); stroke-width:1";/>
         <line id="motorExpectedPosition" x1="50%" y1="50%" x2="50%" y2="1px" style="stroke:rgb(184, 58, 9); stroke-width:1";/>
       </svg>
 
-      <svg id="pwmSVG" viewBox="0 0 50 40" xmlns="http://www.w3.org/2000/svg">
-        <line id="pwmU" x1="0" y1="10" x2="100" y2="10" style="stroke:rgb(136, 131, 86); stroke-width:6";/>
-        <line id="pwmV" x1="0" y1="20" x2="100" y2="20" style="stroke:rgb(87, 138, 98); stroke-width:6";/>
-        <line id="pwmW" x1="0" y1="30" x2="100" y2="30" style="stroke:rgb(129, 109, 156); stroke-width:6";/>
-        <style>
-          .pwmFont {
-            font: 4px Verdana;
-          }
-        </style>
-        <text x="0" y="11.5" class="pwmFont">PWM U</text>
-        <text x="0" y="21.5" class="pwmFont">PWM V</text>
-        <text x="0" y="31.5" class="pwmFont">PWM W</text>
-      </svg>
+      <div id="modeSelect">
+        <div id="buttonMode1" onclick="set_mode('0')">One point mode</div>
+        <div id="buttonMode2" onclick="set_mode('1')">Switch mode</div>
+      </div>
 
-      <div id="sectionHolder">
+      
+      <div id="bldcPositionBox">
         <div id="spacer">
           <svg id="bldcSetPosition" width="100%" height="80" xmlns="http://www.w3.org/2000/svg">
-            <line id="getPos" x1="0" y1="60" x2="100%" y2="60" style="stroke:rgb(119, 169, 192); stroke-width:30";/>
+            <line id="getPos" x1="0" y1="60" x2="100%" y2="60" style="stroke:#808080; stroke-width:30";/>
             <rect id="posPointer" x="0" y="40" width="7" height="40" style="fill:rgb(197, 23, 46); stroke-width:0; stroke:rgb(0,0,0)"  />
             <style>
               .exFont {
                 font: 26px Verdana;
+                fill: #9f9f9f;
               }
             </style>
             <text x="0" y="20" class="exFont">expected position: </text>
@@ -64,19 +66,39 @@
           </svg>
         </div>
       </div>
+
+      <div id="bldcPowerBox">
+        <div id="spacer">
+          <svg id="bldcSetPower" width="100%" height="80" xmlns="http://www.w3.org/2000/svg">
+            <line id="getPow" x1="0" y1="58" x2="100%" y2="58" style="stroke:#808080; stroke-width:25";/>
+            <line id="getPow" x1="0" y1="58" x2="12%" y2="58" style="stroke:#442f2f; stroke-width:25";/>
+            <rect id="powerPointer" x="0" y="40" width="7" height="40" style="fill:rgb(197, 23, 46); stroke-width:0; stroke:rgb(0,0,0)"  />
+            <line id="actualPower" x1="0" y1="72" x2="100%" y2="72" style="stroke:#3b6930; stroke-width:5";/>
+            <style>
+              .exFont {
+                font: 26px Verdana;
+                fill: #9f9f9f;
+              }
+            </style>
+            <text x="0" y="20" class="exFont">expected power: </text>
+            <text id="bldcExpectedPowerLabel" x="50%" y="20" class="exFont">0</text>
+          </svg>
+        </div>
+      </div>
     </body>
 
   <style>
     body {
-      background-color: rgb(235, 255, 231);
+      background-color: rgb(30, 30, 30);
     }
     
     #myTitle {
         grid-column: 1 / 4;
-        font-size: 56px;
-        font-weight: 500;
+        grid-row: 1 / 1;
+        font-size: 65px;
+        font-weight: 400;
         text-align: center;
-        color: rgb(70, 30, 94);
+        color: rgb(96 86 102);
         font-family: Verdana, Geneva, Tahoma, sans-serif;
     }
 
@@ -105,17 +127,59 @@
       text-align: right;
     }
 
-    #motorSVG {
-      grid-column: 1 / 1;
-      grid-row: 7 / 9;
-      margin: 30px;
+    #pwmHolder {
+      grid-column: 1 / 4;
+      grid-row: 2 / 2;
+      margin: 0px 30px 0px 30px;
     }
 
-    #pwmSVG {
-      grid-column: 2 / 4;
-      grid-row: 7 / 9;
-      margin-top: 30px;
+    #motorSVG {
+      grid-column: 1 / 1;
+      grid-row: 3 / 3;
+      margin-left: 30px;
+      width: 70%;
     }
+
+    #modeSelect {
+      grid-column: 2 / 4;
+      grid-row: 3 / 3;
+      margin-left: 30px;
+    }
+
+    #buttonMode1{
+      background-color: #52754a;
+      border-radius: 20px;
+      width: 250px;
+      height: 30px;
+      margin: 15px -200px 15px 60px;
+      text-align: center;
+      font-size: 26px;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      font-weight: 200;
+      color: #909090;
+      transition: all .3s ease-in-out;
+      opacity: 0.7;
+      transition: .3s;
+    }
+
+    #buttonMode2{
+      background-color: #52754a;
+      border-radius: 20px;
+      width: 250px;
+      height: 30px;
+      margin: 15px -200px 15px 60px;
+      text-align: center;
+      font-size: 26px;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      font-weight: 200;
+      color: #909090;
+      opacity: 0.7;
+      transition: .3s;
+    }
+
+    #buttonMode1:hover {opacity: 1}
+    #buttonMode2:hover {opacity: 1}
+    
 
     #bldcSetPosition {
       grid-column: 1 / 4;
@@ -123,11 +187,19 @@
       margin: 0px;
     }
 
-    #sectionHolder {
+    #bldcPositionBox {
+      grid-column: 1 / 4;
+      grid-row: 8 / 9;
+      margin: 20px 10px 10px 10px;
+      background-color:#2d3030;
+      border-radius: 25px;
+    }
+
+    #bldcPowerBox {
       grid-column: 1 / 4;
       grid-row: 9 / 9;
-      margin: 10px;
-      background-color:#c5ddcc;
+      margin: 20px 10px 10px 10px;
+      background-color:#2d3030;
       border-radius: 25px;
     }
 

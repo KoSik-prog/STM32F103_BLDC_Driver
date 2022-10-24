@@ -81,7 +81,10 @@ extern uint8_t initPhase;
 uint16_t test_array[4095];
 
 extern uint16_t expectedPosition;
-extern uint16_t degree;
+extern uint16_t expectedDegree;
+extern uint16_t expectedPower;
+
+extern uint8_t mode; //driver program 0-1pos / 1-switch
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -117,8 +120,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	}
 
 	if (htim->Instance == TIM4) {
-		MessageLength = sprintf((char*) DataToSend, "#%i,%lu,%lu,%lu,%i/\n\r", bldcEncoder.calculatedAngle, bldcMotor.pwmU, bldcMotor.pwmV, bldcMotor.pwmW, bldcMotor.expectedPosition);
-		CDC_Transmit_FS(DataToSend, MessageLength);
+
 		HAL_GPIO_TogglePin(LEDG_GPIO_Port, LEDG_Pin);
 	}
 }
@@ -279,9 +281,28 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-		float newPos = degree * 1.1406;
-		bldcMotor.expectedPosition = (uint16_t)newPos;
+		MessageLength = sprintf((char*) DataToSend,
+						"#%i,%i,%lu,%lu,%lu,%i,%.0f,%.0f/\n\r", mode, bldcEncoder.calculatedAngle,
+						bldcMotor.pwmU, bldcMotor.pwmV, bldcMotor.pwmW,
+						bldcMotor.expectedPosition, bldcMotor.expectedPower, bldcMotor.actualPower);
+		CDC_Transmit_FS(DataToSend, MessageLength);
+
+		if(bldcMotor.expectedPower != (float)expectedPower){
+			if((float)expectedPower > 12){
+				bldcMotor.expectedPower = (float)expectedPower;
+			} else {
+				bldcMotor.expectedPower = 12;
+			}
+			PID_SetOutputLimits(&PowerPID, 12, bldcMotor.expectedPower);
+		}
 		HAL_Delay(50);
+		if(mode == 0){
+			float newPos = expectedDegree * 1.1406;
+			bldcMotor.expectedPosition = (uint16_t)newPos;
+		} else if (mode == 1){
+			uint16_t switchPos = expectedDegree * 1.1406;
+			bldcHapticSwitch(0, switchPos);
+		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

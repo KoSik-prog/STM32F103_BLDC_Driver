@@ -36,6 +36,8 @@ class Connect:
             print('device not found!')
             serial.Serial.close()
             exit()
+        else:
+            time.sleep(.1)
         rxData = ''
         try:
             self.serialConn = serial.Serial(self.bldcPort, 115200, timeout=0, parity=serial.PARITY_EVEN, rtscts=1)
@@ -103,7 +105,10 @@ class Connect:
         
     def __del__(self):
         print("connection destruction")
-        self.serialConn.close()
+        try:
+            self.serialConn.close()
+        except AttributeError:
+            print("port closed")
         
 class Gui:
     def __init__(self):

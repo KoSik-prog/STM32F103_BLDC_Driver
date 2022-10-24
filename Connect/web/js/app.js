@@ -51,6 +51,14 @@ function call_Back(output){
 
     actualPower = Math.round(partsArray[7]);
     document.getElementById("actualPower").style.transform = "scale(" + actualPower  + "%, 100%)";
+
+    console.log(partsArray);
+    document.getElementById("temperature").innerHTML = partsArray[8] + "°C";
+    if(partsArray[8] > 30){
+        document.getElementById("temperature").style.fill = "#992626";
+    } else {
+        document.getElementById("temperature").style.fill = "#162818";
+    }
 } 
 
 

@@ -75,8 +75,9 @@ uint8_t TXFlag = 0;
 PID_TypeDef PowerPID;
 double PowerPIDSetpoint = 0.0;
 //PID_TypeDef AccelerationPID;
+
+
 //OTHERS
-uint16_t testi = 0;
 extern uint8_t initPhase;
 uint16_t test_array[4095];
 
@@ -85,6 +86,8 @@ extern uint16_t expectedDegree;
 extern uint16_t expectedPower;
 
 extern uint8_t mode; //driver program 0-1pos / 1-switch
+
+uint16_t temperature = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -282,9 +285,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1) {
 		MessageLength = sprintf((char*) DataToSend,
-						"#%i,%i,%lu,%lu,%lu,%i,%.0f,%.0f/\n\r", mode, bldcEncoder.calculatedAngle,
+						"#%i,%i,%lu,%lu,%lu,%i,%.0f,%.0f,%i/\n\r", mode, bldcEncoder.calculatedAngle,
 						bldcMotor.pwmU, bldcMotor.pwmV, bldcMotor.pwmW,
-						bldcMotor.expectedPosition, bldcMotor.expectedPower, bldcMotor.actualPower);
+						bldcMotor.expectedPosition, bldcMotor.expectedPower, bldcMotor.actualPower,
+						temperature);
 		CDC_Transmit_FS(DataToSend, MessageLength);
 
 		if(bldcMotor.expectedPower != (float)expectedPower){
@@ -295,7 +299,7 @@ int main(void)
 			}
 			PID_SetOutputLimits(&PowerPID, 12, bldcMotor.expectedPower);
 		}
-		HAL_Delay(50);
+
 		if(mode == 0){
 			float newPos = expectedDegree * 1.1406;
 			bldcMotor.expectedPosition = (uint16_t)newPos;
@@ -303,6 +307,10 @@ int main(void)
 			uint16_t switchPos = expectedDegree * 1.1406;
 			bldcHapticSwitch(0, switchPos);
 		}
+
+		temperature = (0.04 * (uint16_t)adc_raw_table[4]) - 56;;
+
+		HAL_Delay(50);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

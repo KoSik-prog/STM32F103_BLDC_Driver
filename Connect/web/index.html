@@ -37,11 +37,16 @@
           .posFont {
             font: 8px Verdana;
           }
+          .tempFont {
+            font: 4px Verdana;
+            fill: #2e2c2c;
+          }
         </style>
         <circle cx="50%" cy="50%" r="49%" stroke="#909090" stroke-width="1" fill="#505050"/>
-        <text id="bldcPosition" x="52%" y="65%" class="posFont">0</text>
         <line id="motorPosition" x1="50%" y1="50%" x2="50%" y2="1px" style="stroke:rgb(128, 128, 128); stroke-width:1";/>
         <line id="motorExpectedPosition" x1="50%" y1="50%" x2="50%" y2="1px" style="stroke:rgb(184, 58, 9); stroke-width:1";/>
+        <text id="bldcPosition" x="52%" y="65%" class="posFont">0</text>
+        <text id="temperature" x="20%" y="30%" class="tempFont">0</text>
       </svg>
 
       <div id="modeSelect">

@@ -22,7 +22,7 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+#include "usb_comm.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -259,9 +259,28 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
-  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
-  USBD_CDC_ReceivePacket(&hUsbDeviceFS);
-  return (USBD_OK);
+	  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
+	  USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+
+	  extern uint8_t ReceivedData[40];
+
+	  for (uint8_t iter = 0; iter < 40; ++iter) {
+		  ReceivedData[iter] = 0;
+	  }
+
+	  strlcpy((char*)ReceivedData, (char*)Buf, (*Len) + 1);
+
+	  uint8_t DataToSend[80];
+	  uint8_t MessageLength = 0;
+
+	  if (ReceivedData[0] == '?') {
+		  MessageLength = sprintf((char*)DataToSend, "$%s/\n\r", "BLDCController");
+		  CDC_Transmit_FS(DataToSend, MessageLength);
+	  } else {
+		  decode_message(ReceivedData, 40);
+	  }
+
+	  return (USBD_OK);
   /* USER CODE END 6 */
 }
 

@@ -28,6 +28,7 @@
 #include "as5600.h"
 #include "bldc.h"
 #include "pid.h"
+#include "usb_comm.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -74,10 +75,19 @@ uint8_t TXFlag = 0;
 PID_TypeDef PowerPID;
 double PowerPIDSetpoint = 0.0;
 //PID_TypeDef AccelerationPID;
+
+
 //OTHERS
-uint16_t testi = 0;
 extern uint8_t initPhase;
 uint16_t test_array[4095];
+
+extern uint16_t expectedPosition;
+extern uint16_t expectedDegree;
+extern uint16_t expectedPower;
+
+extern uint8_t mode; //driver program 0-1pos / 1-switch
+
+uint16_t temperature = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -113,17 +123,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	}
 
 	if (htim->Instance == TIM4) {
-		MessageLength = sprintf((char*) DataToSend, "spd: %i\n\r", 1); // (uint16_t)bldcMotor.speed);
-		CDC_Transmit_FS(DataToSend, MessageLength);
+
 		HAL_GPIO_TogglePin(LEDG_GPIO_Port, LEDG_Pin);
-		testi++;
-		if (testi > 10) {
-			testi = 0;
-			//bldcMotor.expectedPosition += 500;
-			if (bldcMotor.expectedPosition > 4095) {
-				bldcMotor.expectedPosition = bldcMotor.expectedPosition - 4095;
-			}
-		}
 	}
 }
 
@@ -191,7 +192,8 @@ void encoder_Test(uint8_t power) {
   * @brief  The application entry point.
   * @retval int
   */
-int main(void){
+int main(void)
+{
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -227,7 +229,7 @@ int main(void){
 	bldcMotor.pwmU = 0;
 	bldcMotor.pwmV = 0;
 	bldcMotor.pwmW = 0;
-	bldcMotor.expectedPosition = 1000;
+	bldcMotor.expectedPosition = 0;
 	bldcMotor.fieldPosition = 0;
 	bldcMotor.fieldLastPosition = 0;
 	bldcMotor.direction = 0;
@@ -282,7 +284,33 @@ int main(void){
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
+		MessageLength = sprintf((char*) DataToSend,
+						"#%i,%i,%lu,%lu,%lu,%i,%.0f,%.0f,%i/\n\r", mode, bldcEncoder.calculatedAngle,
+						bldcMotor.pwmU, bldcMotor.pwmV, bldcMotor.pwmW,
+						bldcMotor.expectedPosition, bldcMotor.expectedPower, bldcMotor.actualPower,
+						temperature);
+		CDC_Transmit_FS(DataToSend, MessageLength);
 
+		if(bldcMotor.expectedPower != (float)expectedPower){
+			if((float)expectedPower > 12){
+				bldcMotor.expectedPower = (float)expectedPower;
+			} else {
+				bldcMotor.expectedPower = 12;
+			}
+			PID_SetOutputLimits(&PowerPID, 12, bldcMotor.expectedPower);
+		}
+
+		if(mode == 0){
+			float newPos = expectedDegree * 1.1406;
+			bldcMotor.expectedPosition = (uint16_t)newPos;
+		} else if (mode == 1){
+			uint16_t switchPos = expectedDegree * 1.1406;
+			bldcHapticSwitch(0, switchPos);
+		}
+
+		temperature = (0.04 * (uint16_t)adc_raw_table[4]) - 56;;
+
+		HAL_Delay(50);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -646,7 +674,7 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 719-1;
+  htim4.Init.Prescaler = 180-1;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 33333 - 1;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

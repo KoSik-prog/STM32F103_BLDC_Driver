@@ -15,11 +15,7 @@ struct BLDCMotorSt {
 	uint32_t pwmU;
 	uint32_t pwmV;
 	uint32_t pwmW;
-	int16_t fieldPosition; //magnetic field position for complete rotation - 4095 pozycji
-	int16_t fieldLastPosition;
 	uint16_t expectedPosition; // expected motor position
-	uint8_t direction; // direction 0-L 1-R
-	double distance; // distance from the expected point to the current point
 	double speed;
 	//double accelerate;
 	double expectedPower;
@@ -30,6 +26,10 @@ struct BLDCMotorSt {
 	double expectedSpeed;
 	double actualSpeedARRReg; //timer 2
 	//uint16_t expectedDeadZone;  // dead zone
+	double distance; // distance from the expected point to the current point
+	uint8_t direction; // direction 0-L 1-R
+	int16_t fieldPosition; //magnetic field position for complete rotation - 4095 pozycji
+	int16_t fieldLastPosition;
 };
 
 struct BLDCencoderSt {

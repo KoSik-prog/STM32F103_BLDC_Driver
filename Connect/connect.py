@@ -1,5 +1,6 @@
 import serial, io, time, threading, eel, keyboard, os
 import serial.tools.list_ports
+from sys import exit
 
 runFlag = True
 
@@ -34,7 +35,6 @@ class Connect:
         self.bldcPort = self.find_device()
         if(self.bldcPort == -1 or self.bldcPort == None):
             print('device not found!')
-            serial.Serial.close()
             exit()
         else:
             time.sleep(.1)

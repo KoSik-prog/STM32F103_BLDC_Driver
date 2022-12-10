@@ -1,4 +1,4 @@
-![alt text](project_bldc.png)
+![alt text](projectbldc.png)
 
 
 Schematic: https://a360.co/3iP8vQz
